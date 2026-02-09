@@ -1,0 +1,32 @@
+# ===========================================
+# AskHC Backend Dependencies
+# ===========================================
+
+# Web Framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.25.0
+python-multipart>=0.0.6
+
+# Configuration
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+
+# LangChain Core
+langchain>=0.1.0
+langchain-core>=0.1.0
+
+# Nebius API (OpenAI-compatible)
+openai>=1.0.0
+
+# Vector Store
+langchain-chroma>=0.1.0
+chromadb>=0.4.0
+
+# Document Processing
+langchain-text-splitters>=0.0.1
+pypdf>=3.17.0
+
+# OCR (optional, for scanned PDFs)
+# pdf2image>=1.16.0
+# pytesseract>=0.3.10

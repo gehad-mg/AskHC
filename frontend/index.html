@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AskHC - Document Assistant</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Loading Screen (shown while server starts) -->
+    <div class="startup-screen" id="startup-screen">
+        <div class="startup-content">
+            <h1>AskHC</h1>
+            <div class="startup-spinner"></div>
+            <p id="startup-status">Connecting to server...</p>
+        </div>
+    </div>
+
+    <!-- Main App (hidden until server ready) -->
+    <div class="container" id="main-app" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <h1>AskHC</h1>
+            <p class="subtitle">Ask questions about your documents</p>
+        </header>
+
+        <!-- Chat Container -->
+        <main class="chat-container">
+            <!-- Messages Area -->
+            <div class="messages" id="messages">
+                <!-- Welcome message -->
+                <div class="message assistant">
+                    <div class="message-content">
+                        <p>Hello! I'm your document assistant. Ask me anything about the indexed documents.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <form id="chat-form" class="chat-form">
+                    <input
+                        type="text"
+                        id="question-input"
+                        class="question-input"
+                        placeholder="Ask a question..."
+                        autocomplete="off"
+                    >
+                    <button type="submit" class="send-btn" id="send-btn">
+                        <svg viewBox="0 0 24 24" width="24" height="24">
+                            <path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
