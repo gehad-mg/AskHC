@@ -1,14 +1,14 @@
 # AskHC - Document Question Answering System
 
-A RAG (Retrieval Augmented Generation) based application for querying documents using natural language.
+A RAG (Retrieval Augmented Generation) based application for querying documents using natural language. Uses Nebius API for embeddings and LLM.
 
 ## Features
 
-- Upload and index PDF/TXT documents
-- Ask questions about your documents
-- Get AI-generated answers with source citations
+- Index PDF/TXT documents
+- Ask questions about your documents in English or Arabic
+- Multilingual support with bge-multilingual-gemma2 embeddings
+- Conversation memory (follow-up questions work)
 - Simple, clean chat interface
-- Modular, scalable architecture
 
 ## Project Structure
 
@@ -20,21 +20,24 @@ AskHC/
 │   │   ├── config.py            # Configuration settings
 │   │   ├── api/routes/          # API endpoints
 │   │   ├── core/                # RAG pipeline components
-│   │   │   ├── embeddings.py    # Embedding model
+│   │   │   ├── embeddings.py    # Nebius API embeddings
 │   │   │   ├── vectorstore.py   # ChromaDB operations
-│   │   │   ├── llm.py           # LLM setup
+│   │   │   ├── llm.py           # Nebius API LLM
 │   │   │   └── rag_chain.py     # RAG chain
 │   │   ├── services/            # Business logic
 │   │   └── models/              # Pydantic schemas
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── .env
 ├── frontend/
 │   ├── index.html
 │   ├── styles.css
 │   └── app.js
 ├── data/
-│   ├── documents/               # Uploaded documents
-│   └── chroma_db/               # Vector store
-└── .env.example
+│   ├── documents/               # Place your PDF/TXT files here
+│   └── chroma_db/               # Vector store (auto-generated)
+├── load_documents.py            # Script to index documents
+├── start.bat                    # Windows startup script
+└── .env                         # Configuration file
 ```
 
 ## Quick Start
@@ -48,28 +51,64 @@ pip install -r requirements.txt
 
 ### 2. Configure Environment
 
-```bash
-cp .env.example .env
-# Edit .env with your settings
+Edit the `.env` file in the project root with your Nebius API key:
+
+```
+NEBIUS_API_KEY=your_nebius_api_key_here
 ```
 
-### 3. Run the Backend
+### 3. Add Documents
 
+Place your PDF or TXT files in the `data/documents/` folder.
+
+### 4. Index Documents
+
+```bash
+python load_documents.py
+```
+
+This will process all documents and create embeddings in the vector store.
+
+### 5. Run the Application
+
+**Option A: Using start.bat (Windows)**
+```bash
+start.bat
+```
+
+**Option B: Manual**
 ```bash
 cd backend
 uvicorn app.main:app --reload
 ```
 
-### 4. Open the Frontend
+Then open your browser to: http://localhost:8000
 
-Open `frontend/index.html` in your browser, or serve it:
+## Configuration
+
+Edit `.env` file:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| NEBIUS_API_KEY | (required) | Your Nebius API key |
+| NEBIUS_BASE_URL | https://api.tokenfactory.nebius.com/v1/ | Nebius API endpoint |
+| EMBEDDING_MODEL_NAME | BAAI/bge-multilingual-gemma2 | Embedding model (multilingual) |
+| LLM_MODEL_NAME | meta-llama/Meta-Llama-3.1-8B-Instruct-fast | LLM model |
+| LLM_MAX_TOKENS | 1024 | Max response tokens |
+| LLM_TEMPERATURE | 0.7 | Response creativity (0-1) |
+| CHUNK_SIZE | 500 | Document chunk size |
+| CHUNK_OVERLAP | 50 | Overlap between chunks |
+| RETRIEVER_K | 5 | Number of documents to retrieve |
+
+## Re-indexing Documents
+
+If you add new documents or want to rebuild the index:
 
 ```bash
-cd frontend
-python -m http.server 3000
+python load_documents.py
 ```
 
-Then visit: http://localhost:3000
+This clears the existing index and re-processes all documents.
 
 ## API Endpoints
 
@@ -83,7 +122,6 @@ Then visit: http://localhost:3000
 ### Documents
 
 - `POST /api/documents/upload` - Upload a document
-- `POST /api/documents/upload-multiple` - Upload multiple documents
 - `GET /api/documents/list` - List uploaded documents
 - `POST /api/documents/reindex` - Re-index all documents
 - `DELETE /api/documents/clear` - Clear vector store
@@ -92,41 +130,22 @@ Then visit: http://localhost:3000
 
 - `GET /health` - Health check
 
-## Configuration
+## Customization
 
-Edit `backend/app/config.py` or use environment variables:
+### Change the System Prompt
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| EMBEDDING_MODEL_NAME | all-MiniLM-L6-v2 | Embedding model |
-| LLM_MODEL_NAME | mistralai/Mistral-7B-Instruct-v0.3 | LLM model |
-| CHUNK_SIZE | 500 | Document chunk size |
-| RETRIEVER_K | 5 | Documents to retrieve |
-
-## Extending the System
-
-### Change Embedding Model
-
-Edit `config.py`:
+Edit `backend/app/core/rag_chain.py`:
 ```python
-EMBEDDING_MODEL_NAME = "your-preferred-model"
+SYSTEM_PROMPT = """Your custom prompt here"""
 ```
 
-### Change LLM
+### Change Models
 
-1. Update `config.py`:
-```python
-LLM_MODEL_NAME = "your-model"
+Edit `.env`:
 ```
-
-2. Update the prompt template in `rag_chain.py` if needed.
-
-### Add Document Types
-
-Edit `services/document_loader.py`:
-1. Add to `SUPPORTED_EXTENSIONS`
-2. Create a `_load_xxx` method
-3. Update `load_file` to handle the type
+EMBEDDING_MODEL_NAME=your-embedding-model
+LLM_MODEL_NAME=your-llm-model
+```
 
 ## License
 
